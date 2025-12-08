@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+const (
+	payloadOn  = "ON"
+	payloadOff = "OFF"
+)
+
 func (c *Conn) cfgTopic(id, entityType string) string {
 	return fmt.Sprintf(
 		"%s/%s/%s/config",
@@ -31,36 +36,41 @@ func (c *Conn) stateTopic(id string) string {
 	)
 }
 
-func (c *Conn) publishCfg(topic string, payload any) error {
-	b, err := json.Marshal(payload)
-	if err != nil {
-		return err
-	}
-	if t := c.client.Publish(topic, 0, true, b); t.Wait() && t.Error() != nil {
+// publishFast sends a message with QoS 0, which is immediate.
+func (c *Conn) publishFast(topic, payload string) error {
+	t := c.client.Publish(topic, 0, true, payload)
+	return t.Error()
+}
+
+// publishSafe ensures at least one broker has acknowledged the message.
+func (c *Conn) publishSafe(topic, payload string) error {
+	if t := c.client.Publish(topic, 1, true, payload); t.Wait() && t.Error() != nil {
 		return t.Error()
 	}
 	return nil
 }
 
-func (c *Conn) publishState(topic string, payload string) error {
-	if t := c.client.Publish(topic, 0, true, payload); t.Wait() && t.Error() != nil {
-		return t.Error()
-	}
-	return nil
-}
-
-func (c *Conn) publishStateBool(topic string, state bool) error {
-	payload := "OFF"
-	if state {
-		payload = "ON"
-	}
-	return c.publishState(topic, payload)
-}
-
-func (c *Conn) publishStateJSON(topic string, payload any) error {
+func (c *Conn) publishSafeJSON(topic string, payload any) error {
 	b, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
-	return c.publishState(topic, string(b))
+	return c.publishSafe(topic, string(b))
+}
+
+func (c *Conn) publishSafeBool(
+	topic string,
+	value bool,
+	payloadTrue string,
+	payloadFalse string,
+) error {
+	payload := payloadFalse
+	if value {
+		payload = payloadTrue
+	}
+	return c.publishSafe(topic, payload)
+}
+
+func (c *Conn) publishSafeState(topic string, value bool) error {
+	return c.publishSafeBool(topic, value, payloadOn, payloadOff)
 }

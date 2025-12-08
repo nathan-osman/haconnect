@@ -12,28 +12,35 @@ type NotifyConfig struct {
 }
 
 type hamqttNotify struct {
+	*hamqttEntityConfig
 	*EntityConfig
 	*NotifyConfig
 	Device       *hamqttDevice `json:"device"`
 	CommandTopic string        `json:"command_topic"`
 }
 
+// Notify provides control of a notify entity.
+type Notify struct {
+	Entity
+}
+
 // Notify creates a new notify entity with the provided configuration.
 func (c *Conn) Notify(
 	entityCfg *EntityConfig,
 	cfg *NotifyConfig,
-) error {
+) (*Notify, error) {
 	cmdTopic := c.cmdTopic(entityCfg.ID, "notify")
-	if err := c.publishCfg(
+	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "notify"),
 		&hamqttNotify{
-			EntityConfig: entityCfg,
-			NotifyConfig: cfg,
-			Device:       c.device,
-			CommandTopic: cmdTopic,
+			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:       entityCfg,
+			NotifyConfig:       cfg,
+			Device:             c.device,
+			CommandTopic:       cmdTopic,
 		},
 	); err != nil {
-		return err
+		return nil, err
 	}
 	if t := c.client.Subscribe(
 		cmdTopic,
@@ -42,7 +49,11 @@ func (c *Conn) Notify(
 			cfg.NotifyCallback(string(msg.Payload()))
 		},
 	); t.Wait() && t.Error() != nil {
-		return t.Error()
+		return nil, t.Error()
 	}
-	return nil
+	n := &Notify{}
+	if err := c.initEntity(n, entityCfg); err != nil {
+		return nil, err
+	}
+	return n, nil
 }

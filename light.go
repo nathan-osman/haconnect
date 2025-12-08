@@ -10,16 +10,13 @@ type LightConfig struct {
 	// State indicates the initial state of the light.
 	State bool `json:"-"`
 
-	// OnCallback is invoked when the light is turned on. Returning true will
-	// cause a change to the light's state.
-	OnCallback func() bool `json:"-"`
-
-	// OffCallback is invoked when the light is turned off. Returning true
-	// will cause a change to the light's state.
-	OffCallback func() bool `json:"-"`
+	// ChangeCallback is invoked when the light's value is changed. Returning
+	// true will cause a corresponding change to the light's state.
+	ChangeCallback func(bool) bool `json:"-"`
 }
 
 type hamqttLight struct {
+	*hamqttEntityConfig
 	*EntityConfig
 	*LightConfig
 	Device       *hamqttDevice `json:"device"`
@@ -28,30 +25,36 @@ type hamqttLight struct {
 	StateTopic   string        `json:"state_topic"`
 }
 
+// Light provides methods for controlling a light entity.
+type Light struct {
+	Entity
+}
+
 // Light creates a new light entity with the provided configuration.
 func (c *Conn) Light(
 	entityCfg *EntityConfig,
 	cfg *LightConfig,
-) error {
+) (*Light, error) {
 	var (
 		cmdTopic   = c.cmdTopic(entityCfg.ID, "light")
 		stateTopic = c.stateTopic(entityCfg.ID)
 	)
-	if err := c.publishStateBool(stateTopic, cfg.State); err != nil {
-		return err
+	if err := c.publishSafeState(stateTopic, cfg.State); err != nil {
+		return nil, err
 	}
-	if err := c.publishCfg(
+	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "light"),
 		&hamqttLight{
-			EntityConfig: entityCfg,
-			LightConfig:  cfg,
-			Device:       c.device,
-			Platform:     "light",
-			CommandTopic: cmdTopic,
-			StateTopic:   stateTopic,
+			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:       entityCfg,
+			LightConfig:        cfg,
+			Device:             c.device,
+			Platform:           "light",
+			CommandTopic:       cmdTopic,
+			StateTopic:         stateTopic,
 		},
 	); err != nil {
-		return err
+		return nil, err
 	}
 	if t := c.client.Subscribe(
 		cmdTopic,
@@ -59,17 +62,21 @@ func (c *Conn) Light(
 		func(client mqtt.Client, msg mqtt.Message) {
 			switch string(msg.Payload()) {
 			case "ON":
-				if cfg.OnCallback() {
-					c.publishStateBool(stateTopic, true)
+				if cfg.ChangeCallback(true) {
+					c.publishSafeState(stateTopic, true)
 				}
 			case "OFF":
-				if cfg.OffCallback() {
-					c.publishStateBool(stateTopic, false)
+				if cfg.ChangeCallback(false) {
+					c.publishSafeState(stateTopic, false)
 				}
 			}
 		},
 	); t.Wait() && t.Error() != nil {
-		return t.Error()
+		return nil, t.Error()
 	}
-	return nil
+	l := &Light{}
+	if err := c.initEntity(l, entityCfg); err != nil {
+		return nil, err
+	}
+	return l, nil
 }

@@ -32,18 +32,18 @@ defer c.Close()
 From there, you can create entities by calling their respective member function. For example, to create a light:
 
 ```golang
-c.Light(
+l, err := c.Light(
     &hamqtt.EntityConfig{
         ID:   "mylight",
         Name: "My Light",
     },
     &hamqtt.LightConfig{
-        OnCallback: func() bool {
-            fmt.Println("Light turned on")
-            return true
-        },
-        OffCallback: func() bool {
-            fmt.Println("Light turned off")
+        ChangeCallback: func(on bool) bool {
+            if on {
+                fmt.Println("Light turned on")
+            } else {
+                fmt.Println("Light turned off")
+            }
             return true
         },
     },
@@ -52,6 +52,12 @@ c.Light(
 
 This will create a corresponding entity for your light that you can then control directly from the Home Assistant UI:
 
-![Screenshot of light control in Home Assistant](https://github.com/nathan-osman/hamqtt/blob/main/dist/example-light.png?raw=true)
+<img src="https://github.com/nathan-osman/hamqtt/blob/main/dist/example-light.png?raw=true" width="229" alt="Screenshot of light control in Home Assistant" />
 
 Toggling the switch should cause the appropriate message to be written to your application's console.
+
+The availability of the light is maintained automatically while your client is running but if you want to manually indicate that the light is unavailable, you can run:
+
+```golang
+l.SetAvailability(false)
+```

@@ -47,7 +47,7 @@ func main() {
 	// Read interactive commands from stdin
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		fmt.Println("Command? (open / close / quit)")
+		fmt.Println("Command? (open / close / avail / unavail / quit)")
 		if !scanner.Scan() {
 			return
 		}
@@ -56,6 +56,10 @@ func main() {
 			s.Set(true)
 		case "close":
 			s.Set(false)
+		case "avail":
+			s.SetAvailability(true)
+		case "unavail":
+			s.SetAvailability(false)
 		case "quit":
 			return
 		}

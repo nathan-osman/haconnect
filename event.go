@@ -17,6 +17,7 @@ type EventConfig struct {
 }
 
 type hamqttEvent struct {
+	*hamqttEntityConfig
 	*EntityConfig
 	*EventConfig
 	Device     *hamqttDevice `json:"device"`
@@ -26,13 +27,13 @@ type hamqttEvent struct {
 
 // Event provides methods for sending events.
 type Event struct {
-	conn       *Conn
+	Entity
 	stateTopic string
 }
 
 // Send sends the specified event.
 func (e *Event) Send(eventType string) error {
-	return e.conn.publishStateJSON(
+	return e.conn.publishSafeJSON(
 		e.stateTopic,
 		map[string]any{
 			"event_type": eventType,
@@ -46,20 +47,24 @@ func (c *Conn) Event(
 	cfg *EventConfig,
 ) (*Event, error) {
 	stateTopic := c.stateTopic(entityCfg.ID)
-	if err := c.publishCfg(
+	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "event"),
 		&hamqttEvent{
-			EntityConfig: entityCfg,
-			EventConfig:  cfg,
-			Device:       c.device,
-			Platform:     "event",
-			StateTopic:   stateTopic,
+			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:       entityCfg,
+			EventConfig:        cfg,
+			Device:             c.device,
+			Platform:           "event",
+			StateTopic:         stateTopic,
 		},
 	); err != nil {
 		return nil, err
 	}
-	return &Event{
-		conn:       c,
+	e := &Event{
 		stateTopic: stateTopic,
-	}, nil
+	}
+	if err := c.initEntity(e, entityCfg); err != nil {
+		return nil, err
+	}
+	return e, nil
 }

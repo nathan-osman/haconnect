@@ -33,7 +33,7 @@ func main() {
 
 	// Create a notify entity which writes to STDOUT when a notification is
 	// received
-	if err := c.Notify(
+	if _, err := c.Notify(
 		&hamqtt.EntityConfig{
 			ID:   "mynotify",
 			Name: "My Notify",

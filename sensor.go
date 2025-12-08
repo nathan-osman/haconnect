@@ -254,6 +254,7 @@ type SensorConfig struct {
 }
 
 type hamqttSensor struct {
+	*hamqttEntityConfig
 	*EntityConfig
 	*SensorConfig
 	Device     *hamqttDevice `json:"device"`
@@ -263,13 +264,13 @@ type hamqttSensor struct {
 
 // Sensor provides methods for indicating changes to the sensor.
 type Sensor struct {
-	conn       *Conn
+	Entity
 	stateTopic string
 }
 
 // Set updates the sensor's value.
 func (s *Sensor) Set(value string) error {
-	return s.conn.publishState(s.stateTopic, value)
+	return s.conn.publishSafe(s.stateTopic, value)
 }
 
 // Sensor creates a new entity that represents a sensor.
@@ -278,20 +279,24 @@ func (c *Conn) Sensor(
 	cfg *SensorConfig,
 ) (*Sensor, error) {
 	stateTopic := c.stateTopic(entityCfg.ID)
-	if err := c.publishCfg(
+	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "sensor"),
 		&hamqttSensor{
-			EntityConfig: entityCfg,
-			SensorConfig: cfg,
-			Device:       c.device,
-			Platform:     "sensor",
-			StateTopic:   stateTopic,
+			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:       entityCfg,
+			SensorConfig:       cfg,
+			Device:             c.device,
+			Platform:           "sensor",
+			StateTopic:         stateTopic,
 		},
 	); err != nil {
 		return nil, err
 	}
-	return &Sensor{
-		conn:       c,
+	s := &Sensor{
 		stateTopic: stateTopic,
-	}, nil
+	}
+	if err := c.initEntity(s, entityCfg); err != nil {
+		return nil, err
+	}
+	return s, nil
 }

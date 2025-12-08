@@ -32,7 +32,7 @@ func main() {
 	defer c.Close()
 
 	// Create a button entity
-	if err := c.Button(
+	if _, err := c.Button(
 		&hamqtt.EntityConfig{
 			ID:   "mybutton",
 			Name: "My Restart Button",

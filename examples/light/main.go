@@ -32,18 +32,18 @@ func main() {
 	defer c.Close()
 
 	// Create a light entity
-	if err := c.Light(
+	if _, err := c.Light(
 		&hamqtt.EntityConfig{
 			ID:   "mylight",
 			Name: "My Light",
 		},
 		&hamqtt.LightConfig{
-			OnCallback: func() bool {
-				fmt.Println("Light turned on")
-				return true
-			},
-			OffCallback: func() bool {
-				fmt.Println("Light turned off")
+			ChangeCallback: func(on bool) bool {
+				if on {
+					fmt.Println("Light turned on")
+				} else {
+					fmt.Println("Light turned off")
+				}
 				return true
 			},
 		},

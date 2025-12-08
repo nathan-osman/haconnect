@@ -42,6 +42,7 @@ type BinarySensorConfig struct {
 }
 
 type hamqttBinarySensor struct {
+	*hamqttEntityConfig
 	*EntityConfig
 	*BinarySensorConfig
 	Device     *hamqttDevice `json:"device"`
@@ -51,13 +52,13 @@ type hamqttBinarySensor struct {
 
 // BinarySensor provides methods for indicating changes to the sensor.
 type BinarySensor struct {
-	conn       *Conn
+	Entity
 	stateTopic string
 }
 
 // Set updates the binary sensor's value.
 func (b *BinarySensor) Set(state bool) error {
-	return b.conn.publishStateBool(b.stateTopic, state)
+	return b.conn.publishSafeState(b.stateTopic, state)
 }
 
 // BinarySensor creates a new entity that represents a binary sensor.
@@ -66,12 +67,13 @@ func (c *Conn) BinarySensor(
 	cfg *BinarySensorConfig,
 ) (*BinarySensor, error) {
 	stateTopic := c.stateTopic(entityCfg.ID)
-	if err := c.publishStateBool(stateTopic, cfg.State); err != nil {
+	if err := c.publishSafeState(stateTopic, cfg.State); err != nil {
 		return nil, err
 	}
-	if err := c.publishCfg(
+	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "binary_sensor"),
 		&hamqttBinarySensor{
+			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
 			EntityConfig:       entityCfg,
 			BinarySensorConfig: cfg,
 			Device:             c.device,
@@ -81,8 +83,11 @@ func (c *Conn) BinarySensor(
 	); err != nil {
 		return nil, err
 	}
-	return &BinarySensor{
-		conn:       c,
+	b := &BinarySensor{
 		stateTopic: stateTopic,
-	}, nil
+	}
+	if err := c.initEntity(b, entityCfg); err != nil {
+		return nil, err
+	}
+	return b, nil
 }

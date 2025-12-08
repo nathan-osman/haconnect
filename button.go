@@ -21,6 +21,7 @@ type ButtonConfig struct {
 }
 
 type hamqttButton struct {
+	*hamqttEntityConfig
 	*EntityConfig
 	*ButtonConfig
 	Device       *hamqttDevice `json:"device"`
@@ -28,23 +29,29 @@ type hamqttButton struct {
 	CommandTopic string        `json:"command_topic"`
 }
 
+// Button provides methods for interacting with a button.
+type Button struct {
+	Entity
+}
+
 // Button creates a new button entity with the provided configuration.
 func (c *Conn) Button(
 	entityCfg *EntityConfig,
 	cfg *ButtonConfig,
-) error {
+) (*Button, error) {
 	cmdTopic := c.cmdTopic(entityCfg.ID, "button")
-	if err := c.publishCfg(
+	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "button"),
 		&hamqttButton{
-			EntityConfig: entityCfg,
-			ButtonConfig: cfg,
-			Device:       c.device,
-			Platform:     "button",
-			CommandTopic: cmdTopic,
+			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:       entityCfg,
+			ButtonConfig:       cfg,
+			Device:             c.device,
+			Platform:           "button",
+			CommandTopic:       cmdTopic,
 		},
 	); err != nil {
-		return err
+		return nil, err
 	}
 	if t := c.client.Subscribe(
 		cmdTopic,
@@ -55,7 +62,11 @@ func (c *Conn) Button(
 			}
 		},
 	); t.Wait() && t.Error() != nil {
-		return t.Error()
+		return nil, t.Error()
 	}
-	return nil
+	b := &Button{}
+	if err := c.initEntity(b, entityCfg); err != nil {
+		return nil, err
+	}
+	return b, nil
 }
