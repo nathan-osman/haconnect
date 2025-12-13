@@ -10,7 +10,7 @@ const (
 	ButtonUpdate   = "update"
 )
 
-// ButtonConfig provides configuration for button entities.
+// ButtonConfig provides configuration for Button.
 type ButtonConfig struct {
 
 	// DeviceClass categorizes the button.
@@ -29,7 +29,7 @@ type haconnectButton struct {
 	CommandTopic string           `json:"command_topic"`
 }
 
-// Button provides methods for interacting with a button.
+// Button represents a button that can be pressed to perform an action.
 type Button struct {
 	Entity
 }

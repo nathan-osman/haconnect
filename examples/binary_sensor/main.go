@@ -53,9 +53,9 @@ func main() {
 		}
 		switch scanner.Text() {
 		case "open":
-			s.Set(true)
+			s.SetValue(true)
 		case "close":
-			s.Set(false)
+			s.SetValue(false)
 		case "avail":
 			s.SetAvailability(true)
 		case "unavail":

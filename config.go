@@ -27,6 +27,6 @@ type Config struct {
 	// Manufacturer provides the manufacturer of the device.
 	Manufacturer string
 
-	// Model provides the model of the device
+	// Model provides the model of the device.
 	Model string
 }
