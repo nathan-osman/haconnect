@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -20,13 +20,13 @@ type ButtonConfig struct {
 	PressCallback func() `json:"-"`
 }
 
-type hamqttButton struct {
-	*hamqttEntityConfig
+type haconnectButton struct {
+	*haconnectEntityConfig
 	*EntityConfig
 	*ButtonConfig
-	Device       *hamqttDevice `json:"device"`
-	Platform     string        `json:"platform"`
-	CommandTopic string        `json:"command_topic"`
+	Device       *haconnectDevice `json:"device"`
+	Platform     string           `json:"platform"`
+	CommandTopic string           `json:"command_topic"`
 }
 
 // Button provides methods for interacting with a button.
@@ -42,13 +42,13 @@ func (c *Conn) Button(
 	cmdTopic := c.cmdTopic(entityCfg.ID, "button")
 	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "button"),
-		&hamqttButton{
-			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
-			EntityConfig:       entityCfg,
-			ButtonConfig:       cfg,
-			Device:             c.device,
-			Platform:           "button",
-			CommandTopic:       cmdTopic,
+		&haconnectButton{
+			haconnectEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:          entityCfg,
+			ButtonConfig:          cfg,
+			Device:                c.device,
+			Platform:              "button",
+			CommandTopic:          cmdTopic,
 		},
 	); err != nil {
 		return nil, err

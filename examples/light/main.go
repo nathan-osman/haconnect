@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nathan-osman/hamqtt"
+	"github.com/nathan-osman/haconnect"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	flag.Parse()
 
 	// Connect to the MQTT broker
-	c, err := hamqtt.New(&hamqtt.Config{
+	c, err := haconnect.New(&haconnect.Config{
 		Addr:     *addr,
 		Username: *username,
 		Password: *password,
@@ -33,11 +33,11 @@ func main() {
 
 	// Create a light entity
 	if _, err := c.Light(
-		&hamqtt.EntityConfig{
+		&haconnect.EntityConfig{
 			ID:   "mylight",
 			Name: "My Light",
 		},
-		&hamqtt.LightConfig{
+		&haconnect.LightConfig{
 			ChangeCallback: func(on bool) bool {
 				if on {
 					fmt.Println("Light turned on")

@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ const (
 	emptyAvailability = "{}"
 )
 
-type hamqttDevice struct {
+type haconnectDevice struct {
 	IDs          string `json:"identifiers"`
 	Name         string `json:"name"`
 	Manufacturer string `json:"manufacturer,omitempty"`
@@ -30,7 +30,7 @@ type Conn struct {
 	id                string
 	availabilityTopic string
 	availability      map[string]string
-	device            *hamqttDevice
+	device            *haconnectDevice
 }
 
 // New creates a new Conn instance with the provided configuration.
@@ -89,7 +89,7 @@ func New(cfg *Config) (*Conn, error) {
 		id:                id,
 		availabilityTopic: availabilityTopic,
 		availability:      make(map[string]string),
-		device: &hamqttDevice{
+		device: &haconnectDevice{
 			IDs:          id,
 			Name:         name,
 			Manufacturer: cfg.Manufacturer,

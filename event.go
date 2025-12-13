@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 const (
 	EventButton   = "button"
@@ -16,13 +16,13 @@ type EventConfig struct {
 	EventTypes []string `json:"event_types,omitempty"`
 }
 
-type hamqttEvent struct {
-	*hamqttEntityConfig
+type haconnectEvent struct {
+	*haconnectEntityConfig
 	*EntityConfig
 	*EventConfig
-	Device     *hamqttDevice `json:"device"`
-	Platform   string        `json:"platform"`
-	StateTopic string        `json:"state_topic"`
+	Device     *haconnectDevice `json:"device"`
+	Platform   string           `json:"platform"`
+	StateTopic string           `json:"state_topic"`
 }
 
 // Event provides methods for sending events.
@@ -49,13 +49,13 @@ func (c *Conn) Event(
 	stateTopic := c.stateTopic(entityCfg.ID)
 	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "event"),
-		&hamqttEvent{
-			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
-			EntityConfig:       entityCfg,
-			EventConfig:        cfg,
-			Device:             c.device,
-			Platform:           "event",
-			StateTopic:         stateTopic,
+		&haconnectEvent{
+			haconnectEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:          entityCfg,
+			EventConfig:           cfg,
+			Device:                c.device,
+			Platform:              "event",
+			StateTopic:            stateTopic,
 		},
 	); err != nil {
 		return nil, err

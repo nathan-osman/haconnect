@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 import (
 	"encoding/json"

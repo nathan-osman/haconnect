@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nathan-osman/hamqtt"
+	"github.com/nathan-osman/haconnect"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	flag.Parse()
 
 	// Connect to the MQTT broker
-	c, err := hamqtt.New(&hamqtt.Config{
+	c, err := haconnect.New(&haconnect.Config{
 		Addr:     *addr,
 		Username: *username,
 		Password: *password,
@@ -33,12 +33,12 @@ func main() {
 
 	// Create a button entity
 	if _, err := c.Button(
-		&hamqtt.EntityConfig{
+		&haconnect.EntityConfig{
 			ID:   "mybutton",
 			Name: "My Restart Button",
 		},
-		&hamqtt.ButtonConfig{
-			DeviceClass: hamqtt.ButtonRestart,
+		&haconnect.ButtonConfig{
+			DeviceClass: haconnect.ButtonRestart,
 			PressCallback: func() {
 				fmt.Println("Restart button was pressed!")
 			},

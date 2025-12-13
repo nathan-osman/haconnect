@@ -1,16 +1,16 @@
-## hamqtt
+## haconnect
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/nathan-osman/hamqtt.svg)](https://pkg.go.dev/github.com/nathan-osman/hamqtt)
+[![Go Reference](https://pkg.go.dev/badge/github.com/nathan-osman/haconnect.svg)](https://pkg.go.dev/github.com/nathan-osman/haconnect)
 [![MIT License](https://img.shields.io/badge/license-MIT-9370d8.svg?style=flat)](https://opensource.org/licenses/MIT)
 
 This package aims to provide an easy interface for exposing entities to [Home Assistant](https://www.home-assistant.io/) via [MQTT](https://mqtt.org/).
 
 ### Installation
 
-Adding hamqtt to your application is as easy as:
+Adding haconnect to your application is as easy as:
 
 ```golang
-import "github.com/nathan-osman/hamqtt"
+import "github.com/nathan-osman/haconnect"
 ```
 
 ### Usage
@@ -18,7 +18,7 @@ import "github.com/nathan-osman/hamqtt"
 To expose entities to Home Assistant, you must first create a connection (`Conn`):
 
 ```golang
-c, err := hamqtt.New(&hamqtt.Config{
+c, err := haconnect.New(&haconnect.Config{
     Addr:     "1.2.3.4:1883",
     Username: "myusername",
     Password: "password123",
@@ -33,11 +33,11 @@ From there, you can create entities by calling their respective member function.
 
 ```golang
 l, err := c.Light(
-    &hamqtt.EntityConfig{
+    &haconnect.EntityConfig{
         ID:   "mylight",
         Name: "My Light",
     },
-    &hamqtt.LightConfig{
+    &haconnect.LightConfig{
         ChangeCallback: func(on bool) bool {
             if on {
                 fmt.Println("Light turned on")
@@ -52,7 +52,7 @@ l, err := c.Light(
 
 This will create a corresponding entity for your light that you can then control directly from the Home Assistant UI:
 
-<img src="https://github.com/nathan-osman/hamqtt/blob/main/dist/example-light.png?raw=true" width="229" alt="Screenshot of light control in Home Assistant" />
+<img src="https://github.com/nathan-osman/haconnect/blob/main/dist/example-light.png?raw=true" width="229" alt="Screenshot of light control in Home Assistant" />
 
 Toggling the switch should cause the appropriate message to be written to your application's console.
 

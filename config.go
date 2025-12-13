@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 // Config provides configuration for instantiating Conn instances.
 type Config struct {

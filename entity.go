@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 import (
 	"encoding/json"
@@ -18,13 +18,13 @@ type EntityConfig struct {
 	Unavailable bool `json:"-"`
 }
 
-type hamqttEntityConfig struct {
+type haconnectEntityConfig struct {
 	AvailabilityTemplate string `json:"availability_template"`
 	AvailabilityTopic    string `json:"availability_topic"`
 }
 
-func (c *Conn) buildEntityConfig(id string) *hamqttEntityConfig {
-	return &hamqttEntityConfig{
+func (c *Conn) buildEntityConfig(id string) *haconnectEntityConfig {
+	return &haconnectEntityConfig{
 		AvailabilityTemplate: fmt.Sprintf(
 			"{{ value_json['%s'] | default('%s') }}",
 			id,

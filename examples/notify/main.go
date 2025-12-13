@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nathan-osman/hamqtt"
+	"github.com/nathan-osman/haconnect"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	flag.Parse()
 
 	// Connect to the MQTT broker
-	c, err := hamqtt.New(&hamqtt.Config{
+	c, err := haconnect.New(&haconnect.Config{
 		Addr:     *addr,
 		Username: *username,
 		Password: *password,
@@ -34,11 +34,11 @@ func main() {
 	// Create a notify entity which writes to STDOUT when a notification is
 	// received
 	if _, err := c.Notify(
-		&hamqtt.EntityConfig{
+		&haconnect.EntityConfig{
 			ID:   "mynotify",
 			Name: "My Notify",
 		},
-		&hamqtt.NotifyConfig{
+		&haconnect.NotifyConfig{
 			NotifyCallback: func(payload string) {
 				fmt.Println(payload)
 			},

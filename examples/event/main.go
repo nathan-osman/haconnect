@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nathan-osman/hamqtt"
+	"github.com/nathan-osman/haconnect"
 )
 
 const (
@@ -25,7 +25,7 @@ func main() {
 	flag.Parse()
 
 	// Connect to the MQTT broker
-	c, err := hamqtt.New(&hamqtt.Config{
+	c, err := haconnect.New(&haconnect.Config{
 		Addr:     *addr,
 		Username: *username,
 		Password: *password,
@@ -37,12 +37,12 @@ func main() {
 
 	// Create an event for a doorbell
 	e, err := c.Event(
-		&hamqtt.EntityConfig{
+		&haconnect.EntityConfig{
 			ID:   "mydoorbell",
 			Name: "My Doorbell",
 		},
-		&hamqtt.EventConfig{
-			DeviceClass: hamqtt.EventDoorbell,
+		&haconnect.EventConfig{
+			DeviceClass: haconnect.EventDoorbell,
 			EventTypes: []string{
 				Press,
 				Hold,

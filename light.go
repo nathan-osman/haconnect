@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -15,14 +15,14 @@ type LightConfig struct {
 	ChangeCallback func(bool) bool `json:"-"`
 }
 
-type hamqttLight struct {
-	*hamqttEntityConfig
+type haconnectLight struct {
+	*haconnectEntityConfig
 	*EntityConfig
 	*LightConfig
-	Device       *hamqttDevice `json:"device"`
-	Platform     string        `json:"platform"`
-	CommandTopic string        `json:"command_topic"`
-	StateTopic   string        `json:"state_topic"`
+	Device       *haconnectDevice `json:"device"`
+	Platform     string           `json:"platform"`
+	CommandTopic string           `json:"command_topic"`
+	StateTopic   string           `json:"state_topic"`
 }
 
 // Light provides methods for controlling a light entity.
@@ -44,14 +44,14 @@ func (c *Conn) Light(
 	}
 	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "light"),
-		&hamqttLight{
-			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
-			EntityConfig:       entityCfg,
-			LightConfig:        cfg,
-			Device:             c.device,
-			Platform:           "light",
-			CommandTopic:       cmdTopic,
-			StateTopic:         stateTopic,
+		&haconnectLight{
+			haconnectEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:          entityCfg,
+			LightConfig:           cfg,
+			Device:                c.device,
+			Platform:              "light",
+			CommandTopic:          cmdTopic,
+			StateTopic:            stateTopic,
 		},
 	); err != nil {
 		return nil, err

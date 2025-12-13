@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 const (
 	SensorAbsoluteHumidity              = "absolute_humidity"
@@ -253,13 +253,13 @@ type SensorConfig struct {
 	SuggestedDisplayPrecision int `json:"suggested_display_precision,omitempty"`
 }
 
-type hamqttSensor struct {
-	*hamqttEntityConfig
+type haconnectSensor struct {
+	*haconnectEntityConfig
 	*EntityConfig
 	*SensorConfig
-	Device     *hamqttDevice `json:"device"`
-	Platform   string        `json:"platform"`
-	StateTopic string        `json:"state_topic"`
+	Device     *haconnectDevice `json:"device"`
+	Platform   string           `json:"platform"`
+	StateTopic string           `json:"state_topic"`
 }
 
 // Sensor provides methods for indicating changes to the sensor.
@@ -281,13 +281,13 @@ func (c *Conn) Sensor(
 	stateTopic := c.stateTopic(entityCfg.ID)
 	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "sensor"),
-		&hamqttSensor{
-			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
-			EntityConfig:       entityCfg,
-			SensorConfig:       cfg,
-			Device:             c.device,
-			Platform:           "sensor",
-			StateTopic:         stateTopic,
+		&haconnectSensor{
+			haconnectEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:          entityCfg,
+			SensorConfig:          cfg,
+			Device:                c.device,
+			Platform:              "sensor",
+			StateTopic:            stateTopic,
 		},
 	); err != nil {
 		return nil, err

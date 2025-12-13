@@ -1,4 +1,4 @@
-module github.com/nathan-osman/hamqtt
+module github.com/nathan-osman/haconnect
 
 go 1.24.0
 

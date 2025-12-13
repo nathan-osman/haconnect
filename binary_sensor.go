@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 const (
 	BinarySensorBattery         = "battery"
@@ -41,13 +41,13 @@ type BinarySensorConfig struct {
 	DeviceClass string `json:"device_class,omitempty"`
 }
 
-type hamqttBinarySensor struct {
-	*hamqttEntityConfig
+type haconnectBinarySensor struct {
+	*haconnectEntityConfig
 	*EntityConfig
 	*BinarySensorConfig
-	Device     *hamqttDevice `json:"device"`
-	Platform   string        `json:"platform"`
-	StateTopic string        `json:"state_topic"`
+	Device     *haconnectDevice `json:"device"`
+	Platform   string           `json:"platform"`
+	StateTopic string           `json:"state_topic"`
 }
 
 // BinarySensor provides methods for indicating changes to the sensor.
@@ -72,13 +72,13 @@ func (c *Conn) BinarySensor(
 	}
 	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "binary_sensor"),
-		&hamqttBinarySensor{
-			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
-			EntityConfig:       entityCfg,
-			BinarySensorConfig: cfg,
-			Device:             c.device,
-			Platform:           "binary_sensor",
-			StateTopic:         stateTopic,
+		&haconnectBinarySensor{
+			haconnectEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:          entityCfg,
+			BinarySensorConfig:    cfg,
+			Device:                c.device,
+			Platform:              "binary_sensor",
+			StateTopic:            stateTopic,
 		},
 	); err != nil {
 		return nil, err

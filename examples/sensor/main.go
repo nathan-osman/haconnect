@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nathan-osman/hamqtt"
+	"github.com/nathan-osman/haconnect"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 	flag.Parse()
 
 	// Connect to the MQTT broker
-	c, err := hamqtt.New(&hamqtt.Config{
+	c, err := haconnect.New(&haconnect.Config{
 		Addr:     *addr,
 		Username: *username,
 		Password: *password,
@@ -32,13 +32,13 @@ func main() {
 
 	// Create a thermometer
 	s, err := c.Sensor(
-		&hamqtt.EntityConfig{
+		&haconnect.EntityConfig{
 			ID:   "mythermometer",
 			Name: "My Thermometer",
 		},
-		&hamqtt.SensorConfig{
-			DeviceClass:               hamqtt.SensorTemperature,
-			UnitOfMeasurement:         hamqtt.SensorDegreesCelsius,
+		&haconnect.SensorConfig{
+			DeviceClass:               haconnect.SensorTemperature,
+			UnitOfMeasurement:         haconnect.SensorDegreesCelsius,
 			SuggestedDisplayPrecision: 1,
 		},
 	)

@@ -1,4 +1,4 @@
-package hamqtt
+package haconnect
 
 import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -11,12 +11,12 @@ type NotifyConfig struct {
 	NotifyCallback func(payload string) `json:"-"`
 }
 
-type hamqttNotify struct {
-	*hamqttEntityConfig
+type haconnectNotify struct {
+	*haconnectEntityConfig
 	*EntityConfig
 	*NotifyConfig
-	Device       *hamqttDevice `json:"device"`
-	CommandTopic string        `json:"command_topic"`
+	Device       *haconnectDevice `json:"device"`
+	CommandTopic string           `json:"command_topic"`
 }
 
 // Notify provides control of a notify entity.
@@ -32,12 +32,12 @@ func (c *Conn) Notify(
 	cmdTopic := c.cmdTopic(entityCfg.ID, "notify")
 	if err := c.publishSafeJSON(
 		c.cfgTopic(entityCfg.ID, "notify"),
-		&hamqttNotify{
-			hamqttEntityConfig: c.buildEntityConfig(entityCfg.ID),
-			EntityConfig:       entityCfg,
-			NotifyConfig:       cfg,
-			Device:             c.device,
-			CommandTopic:       cmdTopic,
+		&haconnectNotify{
+			haconnectEntityConfig: c.buildEntityConfig(entityCfg.ID),
+			EntityConfig:          entityCfg,
+			NotifyConfig:          cfg,
+			Device:                c.device,
+			CommandTopic:          cmdTopic,
 		},
 	); err != nil {
 		return nil, err
