@@ -53,6 +53,6 @@ func main() {
 		if !scanner.Scan() {
 			return
 		}
-		s.Set(scanner.Text())
+		s.SetValue(scanner.Text())
 	}
 }

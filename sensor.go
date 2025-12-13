@@ -233,7 +233,7 @@ const (
 	SensorZettabyte                     = "ZB"
 )
 
-// SensorConfig provides configuration for sensors.
+// SensorConfig provides configuration for Sensor.
 type SensorConfig struct {
 
 	// DeviceClass categorizes the type of data reported by the sensor.
@@ -262,18 +262,18 @@ type haconnectSensor struct {
 	StateTopic string           `json:"state_topic"`
 }
 
-// Sensor provides methods for indicating changes to the sensor.
+// Sensor represents a sensor that reports readings at regular intervals.
 type Sensor struct {
 	Entity
 	stateTopic string
 }
 
-// Set updates the sensor's value.
-func (s *Sensor) Set(value string) error {
+// SetValue updates the sensor's value.
+func (s *Sensor) SetValue(value string) error {
 	return s.conn.publishSafe(s.stateTopic, value)
 }
 
-// Sensor creates a new entity that represents a sensor.
+// Sensor creates a new sensor entity.
 func (c *Conn) Sensor(
 	entityCfg *EntityConfig,
 	cfg *SensorConfig,

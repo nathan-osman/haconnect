@@ -6,7 +6,7 @@ const (
 	EventMotion   = "motion"
 )
 
-// EventConfig provides configuration for event entities.
+// EventConfig provides configuration for Event.
 type EventConfig struct {
 
 	// DeviceClass categorizes the type of event.
@@ -25,7 +25,7 @@ type haconnectEvent struct {
 	StateTopic string           `json:"state_topic"`
 }
 
-// Event provides methods for sending events.
+// Event represents an entity that periodically sends events.
 type Event struct {
 	Entity
 	stateTopic string
@@ -41,7 +41,7 @@ func (e *Event) Send(eventType string) error {
 	)
 }
 
-// Event creates a new event entity with the provided configuration.
+// Event creates a new event entity.
 func (c *Conn) Event(
 	entityCfg *EntityConfig,
 	cfg *EventConfig,

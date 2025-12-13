@@ -4,14 +4,15 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-// LightConfig provides configuration for light entities.
+// LightConfig provides configuration for Light.
 type LightConfig struct {
 
-	// State indicates the initial state of the light.
+	// State provides the initial state of the light.
 	State bool `json:"-"`
 
 	// ChangeCallback is invoked when the light is to be turned on or off.
 	// Returning true will cause a corresponding change to the light's state.
+	// Alternatively, SetValue can be used to indicate state.
 	ChangeCallback func(bool) bool `json:"-"`
 }
 
@@ -36,7 +37,7 @@ func (l *Light) SetValue(value bool) error {
 	return l.conn.publishSafeState(l.stateTopic, value)
 }
 
-// Light creates a new light entity with the provided configuration.
+// Light creates a new light entity.
 func (c *Conn) Light(
 	entityCfg *EntityConfig,
 	cfg *LightConfig,

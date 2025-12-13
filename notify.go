@@ -4,7 +4,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-// NotifyConfig provides configuration for notify entities.
+// NotifyConfig provides configuration for Notify.
 type NotifyConfig struct {
 
 	// NotifyCallback is invoked when a new notification is received.
@@ -19,12 +19,12 @@ type haconnectNotify struct {
 	CommandTopic string           `json:"command_topic"`
 }
 
-// Notify provides control of a notify entity.
+// Notify represents an entity that receives and processes notifications.
 type Notify struct {
 	Entity
 }
 
-// Notify creates a new notify entity with the provided configuration.
+// Notify creates a new notify entity.
 func (c *Conn) Notify(
 	entityCfg *EntityConfig,
 	cfg *NotifyConfig,
