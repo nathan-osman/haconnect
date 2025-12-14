@@ -26,7 +26,7 @@ type haconnectLight struct {
 	StateTopic   string           `json:"state_topic"`
 }
 
-// Light provides methods for controlling a light entity.
+// Light represents an entity that provides illumination.
 type Light struct {
 	Entity
 	stateTopic string
