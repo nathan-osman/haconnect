@@ -16,10 +16,15 @@ const (
 )
 
 type haconnectDevice struct {
-	IDs          string `json:"identifiers"`
-	Name         string `json:"name"`
-	Manufacturer string `json:"manufacturer,omitempty"`
-	Model        string `json:"model,omitempty"`
+	Identifiers   []string `json:"identifiers"`
+	Name          string   `json:"name"`
+	Manufacturer  string   `json:"manufacturer,omitempty"`
+	Model         string   `json:"model,omitempty"`
+	ModelID       string   `json:"model_id,omitempty"`
+	HWVersion     string   `json:"hw_version,omitempty"`
+	SWVersion     string   `json:"sw_version,omitempty"`
+	SerialNumber  string   `json:"serial_number,omitempty"`
+	SuggestedArea string   `json:"suggested_area,omitempty"`
 }
 
 // Conn maintains a connection to an MQTT broker.
@@ -90,10 +95,15 @@ func New(cfg *Config) (*Conn, error) {
 		availabilityTopic: availabilityTopic,
 		availability:      make(map[string]string),
 		device: &haconnectDevice{
-			IDs:          id,
-			Name:         name,
-			Manufacturer: cfg.Manufacturer,
-			Model:        cfg.Model,
+			Identifiers:   append(cfg.Identifiers, cfg.ID),
+			Name:          name,
+			Manufacturer:  cfg.Manufacturer,
+			Model:         cfg.Model,
+			ModelID:       cfg.ModelID,
+			HWVersion:     cfg.HWVersion,
+			SWVersion:     cfg.SWVersion,
+			SerialNumber:  cfg.SerialNumber,
+			SuggestedArea: cfg.SuggestedArea,
 		},
 	}
 

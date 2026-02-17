@@ -24,9 +24,28 @@ type Config struct {
 	// used.
 	Name string
 
+	// Identifiers provides a list of IDs that uniquely identify the device,
+	// such as its MAC address(es).
+	Identifiers []string
+
 	// Manufacturer provides the manufacturer of the device.
 	Manufacturer string
 
 	// Model provides the model of the device.
 	Model string
+
+	// ModelID provides the model identifier of the device.
+	ModelID string
+
+	// HWVersion provides the hardware version of the device.
+	HWVersion string
+
+	// SWVersion provides the software version of the device.
+	SWVersion string
+
+	// SerialNumber provides the serial number of the device.
+	SerialNumber string
+
+	// SuggestedArea provides the area where the device is located.
+	SuggestedArea string
 }
