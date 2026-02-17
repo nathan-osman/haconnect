@@ -73,7 +73,9 @@ func New(cfg *Config) (*Conn, error) {
 			SetUsername(cfg.Username).
 			SetPassword(cfg.Password).
 			SetClientID(id).
-			SetResumeSubs(true).
+			SetAutoReconnect(true).
+			SetCleanSession(false).
+			SetConnectRetry(true).
 			SetWill(
 				availabilityTopic,
 				emptyAvailability,
